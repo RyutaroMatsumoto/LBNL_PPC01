@@ -1516,7 +1516,9 @@ weakdeps = ["Measurements"]
 
 [[deps.LegendSpecFits]]
 deps = ["ArgCheck", "ArraysOfArrays", "BAT", "ChangesOfVariables", "DensityInterface", "Distributions", "FillArrays", "Format", "ForwardDiff", "GaussianMixtures", "IntervalSets", "InverseFunctions", "IrrationalConstants", "KernelDensity", "LaTeXStrings", "LinearAlgebra", "LinearRegression", "LogExpFunctions", "LsqFit", "Measurements", "Measures", "Optim", "Optimization", "OptimizationBBO", "OptimizationNLopt", "OptimizationOptimJL", "PropDicts", "RadiationSpectra", "Random", "Roots", "SnoopPrecompile", "SpecialFunctions", "Statistics", "StatsBase", "StructArrays", "Tables", "TypedTables", "Unitful", "ValueShapes"]
-path = "/global/homes/l/lschl/JuLeAna/Packages/LegendSpecFits.jl"
+git-tree-sha1 = "22cdbf6155209441cfcacb30515b0481fc15d5a8"
+repo-rev = "co60"
+repo-url = "https://github.com/legend-exp/LegendSpecFits.jl.git"
 uuid = "18221496-77af-46cf-bab8-820da09f7f97"
 version = "0.3.0"
 weakdeps = ["Plots", "RecipesBase"]
