@@ -19,9 +19,13 @@ using Measures
 using Optim
 using BSplineKit
 using Printf
-# set data configuration (where to find data; and where to save results)
-ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
 
+# set data configuration (where to find data; and where to save results)
+if gethostname() == "Lisas-MacBook-Pro.local"
+  ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
+else # on NERSC 
+  ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
+end 
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/src/filteropt_rt_optimization_blnoise.jl")
@@ -32,12 +36,13 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_filteropt.jl")
 # inputs 
 asic = LegendData(:ppc01)
 period = DataPeriod(2)
-run = DataRun(1)
+run = DataRun(4)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
+
 # # do optimization 
-# process_filteropt(asic, period, run, category, channel; reprocess = true, rt_opt_mode = :bl_noise)
+process_filteropt(asic, period, run, category, channel; reprocess = true, rt_opt_mode = :bl_noise)
 
 # # read filter optimization pars
 # fltopt_pars = asic.par.rpars.fltopt[period,run,channel]

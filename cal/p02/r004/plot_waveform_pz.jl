@@ -1,8 +1,5 @@
 ## analysis of PPC01 data - period 02 (GFET)
-
 # activate environment and load modules. 
-env_path = "$(@__DIR__)/" * relpath(split(@__DIR__, "LBNL_PPC01")[1], @__DIR__)  * "/LBNL_PPC01/"
-import Pkg; Pkg.activate(env_path)
 using LegendDataManagement
 using LegendDataManagement: readlprops
 using LegendDataManagement.LDMUtils
@@ -15,16 +12,19 @@ using Measures
 using Measurements: value as mvalue
 
 # set data configuration (where to find data; and where to save results)
-ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"#"/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-# ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-
+if gethostname() == "Lisas-MacBook-Pro.local"
+    ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
+  else # on NERSC 
+    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
+  end 
+  
 # load functions from hpge-ana
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__)
 include("$relPath/hpge-ana/utils/utils_plot.jl")
 
 # inputs and setup 
 period = DataPeriod(2)
-run = DataRun(1)
+run = DataRun(4)
 channel = ChannelId(1)
 category = :cal 
 asic = LegendData(:ppc01)
