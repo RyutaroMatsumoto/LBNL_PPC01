@@ -16,11 +16,11 @@ using CairoMakie
 using Measures
 
 # set data configuration (where to find data; and where to save results)
-if gethostname() == "Lisas-MacBook-Pro.local"
-    ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-else # on NERSC 
-    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
-end 
+# if gethostname() == "Lisas-MacBook-Pro.local"
+#     ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
+# else # on NERSC 
+    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/PPC01_ryutaro/config.json"
+# end 
 
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
@@ -34,7 +34,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 reprocess = false
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
-run = DataRun(1)
+run = DataRun(2)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 source = :co60
@@ -49,4 +49,4 @@ dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 plts = process_peak_split(asic, period, run, category, channel, ecal_config, dsp_config, qc_config ; reprocess = reprocess)   
 
 # plots 
-display(plts[2])
+display(plts[3])
