@@ -6,13 +6,6 @@ using PropDicts
 using Unitful
 using TypedTables
 
-# set data configuration (where to find data; and where to save results)
-if gethostname() == "Lisas-MacBook-Pro.local"
-    ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-else # on NERSC 
-    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
-end 
-
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/src/apply_qc.jl")
@@ -21,7 +14,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_qualitycuts.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
-run = DataRun(1)
+run = DataRun(13)
 channel = ChannelId(1)
 category = :cal 
 
@@ -34,4 +27,5 @@ process_qualitycuts(asic, period, run, category, channel; reprocess = true, qc_c
 qc = asic.par.rpars.qc[period][run][channel]
 qc.wvf_keep.all
 
-
+sum(qc.wvf_keep.all)
+qc.qc_surv.all

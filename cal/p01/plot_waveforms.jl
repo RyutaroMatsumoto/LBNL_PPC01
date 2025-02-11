@@ -6,27 +6,20 @@ using HDF5, LegendHDF5IO
 using PropDicts
 using Unitful
 using TypedTables
-using CairoMakie 
+using CairoMakie, LegendPlots 
 using Measures
 using LegendDSP
 using RadiationDetectorDSP
 using IntervalSets
 using Measurements: value as mvalue
 
-# set data configuration (where to find data; and where to save results)
-if gethostname() == "Lisas-MacBook-Pro.local" || gethostname() == "a4-cf-99-81-90-2f.dhcp.lbnl.us"
-    ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-else # on NERSC 
-    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
-end 
-
 # load functions from hpge-ana
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__)
 include("$relPath/hpge-ana/utils/utils_plot.jl")
 
 # inputs and setup 
-period = DataPeriod(2)
-run = DataRun(4)
+period = DataPeriod(1)
+run = DataRun(1)
 channel = ChannelId(1)
 category = :cal 
 asic = LegendData(:ppc01)
@@ -40,7 +33,7 @@ Table(data)
 
 # plot waveforms 
 show_dsp_windows = true 
-Makie_theme(; fs = 23, xgridvisible = true, ygridvisible = true)
+# Makie_theme(; fs = 23, xgridvisible = true, ygridvisible = true)
 plt_folder = LegendDataManagement.LDMUtils.get_pltfolder(asic, filekeys[1], :waveform)
 begin
     i = rand(1:length(wvfs))
@@ -72,7 +65,7 @@ deconv_flt = InvCRFilter(τ_pz)
 wvfs_pz = deconv_flt.(wvfs_shift)
 
 show_dsp_windows = false 
-Makie_theme(; fs = 20, xgridvisible = true, ygridvisible = true)
+# Makie_theme(; fs = 20, xgridvisible = true, ygridvisible = true)
 plt_folder = LegendDataManagement.LDMUtils.get_pltfolder(asic, filekeys[1], :waveform)
 begin
     i = rand(1:length(data.waveform))

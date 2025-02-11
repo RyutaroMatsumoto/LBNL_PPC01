@@ -17,12 +17,6 @@ using Measures
 using Optim
 using BSplineKit
 using Printf
-# set data configuration (where to find data; and where to save results)
-if gethostname() == "Lisas-MacBook-Pro.local"
-    ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-else # on NERSC 
-    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
-end 
 
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"

@@ -10,13 +10,6 @@ using Measurements: value as mvalue
 using LegendDSP, RadiationDetectorDSP, IntervalSets
 using Unitful, Measures, Printf
 
-# set data configuration (where to find data; and where to save results)
-if gethostname() == "Lisas-MacBook-Pro.local"
-    ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-else # on NERSC 
-    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"
-end 
-
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
@@ -24,7 +17,7 @@ include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
-run = DataRun(1)
+run = DataRun(6)
 channel = ChannelId(1)
 category = :cal 
 

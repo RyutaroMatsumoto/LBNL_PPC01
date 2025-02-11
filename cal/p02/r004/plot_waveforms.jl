@@ -1,8 +1,5 @@
 ## analysis of PPC01 data - period 02 (GFET)
-
 # activate environment and load modules. 
-env_path = "$(@__DIR__)/" * relpath(split(@__DIR__, "LBNL_PPC01")[1], @__DIR__)  * "/LBNL_PPC01/"
-import Pkg; Pkg.activate(env_path)
 using LegendDataManagement
 using LegendDataManagement: readlprops
 using LegendDataManagement.LDMUtils
@@ -10,12 +7,8 @@ using HDF5, LegendHDF5IO
 using PropDicts
 using Unitful
 using TypedTables
-using CairoMakie 
+using CairoMakie, LegendPlots
 using Measures
-
-# set data configuration (where to find data; and where to save results)
-ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/ppc01/config.json"#"/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
-# ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
 
 # load functions from hpge-ana
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__)
@@ -32,16 +25,6 @@ asic = LegendData(:ppc01)
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 data = read_ldata(asic, DataTier(:raw), filekeys, channel)
 Table(data)
-
-# how long did measurement take
-time_daq_h = (data.timestamp[end] - data.timestamp[1])/(60*60)
-time_per_wvf_h = (time_daq_h)/4700
-
-time_per_100kwvf_h = time_per_wvf_h * 100e3
-
-# confirm scope samping: number of data points 
-data.waveform[1].signal
-uconvert(u"ns",step(data.waveform[1].time))
 
 # plot waveforms 
 Makie_theme(; fs = 23, xgridvisible = true, ygridvisible = true)
