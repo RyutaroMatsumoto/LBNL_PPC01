@@ -25,8 +25,8 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(13)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
@@ -35,7 +35,7 @@ filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run
 pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 min_τ, max_τ = pz_config.min_tau, pz_config.max_tau
-nbins        = 100#pz_config.nbins
+nbins        = pz_config.nbins
 rel_cut_fit  = pz_config.rel_cut_fit
 peak = Symbol(pz_config.peak)
 bl_window = dsp_config.bl_window
@@ -48,3 +48,16 @@ display(plt)
 # sanity check: read decay time pars
 pars_pz = asic.par.rpars.pz[period, run, channel]
 
+# ## DEBUG 
+# data = asic
+# if peak == :all 
+#     data_peak = read_ldata(data, DataTier(:raw), filekeys, channel)
+# else
+#     data_peak  = read_ldata((peak), data, :jlpeaks, category, period, run, channel)
+# end 
+# wvfs = data_peak.waveform
+# decay_times = dsp_decay_times(wvfs, bl_window, tail_window)
+
+# cuts_τ = cut_single_peak(decay_times, min_τ, max_τ,; n_bins=100, relative_cut=0.25)
+# result, report = fit_single_trunc_gauss(decay_times, cuts_τ)
+# Plots.plot(report, legend = false)

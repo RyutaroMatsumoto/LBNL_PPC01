@@ -23,11 +23,11 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 # inputs
 reprocess = true 
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(13)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = :cal 
-e_types = [:e_trap, :e_cusp]
+e_types = [:e_trap]#, :e_cusp]
 
 # load configuration for calibration
 filekey = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])[1]

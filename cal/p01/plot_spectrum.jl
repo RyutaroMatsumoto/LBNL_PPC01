@@ -21,8 +21,8 @@ include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(10)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 det = _channel2detector(asic, channel)
 category = :cal 
@@ -30,7 +30,7 @@ e_type = :e_trap
 
 # load calibrated energy spectrum 
 hit_par = Table(read_ldata(asic, :jlhit, category, period, run))
-#[hit_par.qc]
+hit_par = hit_par[hit_par.qc]
 ecal = getproperty(hit_par, e_type)
 filekey = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])[1]
 ecal_config = dataprod_config(asic).energy(filekey).default
@@ -49,9 +49,10 @@ ax = Axis(fig[1, 1],
         ylabel = "Counts",
         titlesize = 16)
 hist!(fig[1, 1], ustrip.(ecal), bins = 500:1:1600)
-ylims!(ax, 0.5, 1500)
-Makie.text!(ustrip(µ[1])+50, 400, text = "$(gamma_names[1]): $(µ[1])\nFWHM = $(fwhm[1])"; align = (:right, :center), fontsize = 16)
-Makie.text!(ustrip(µ[2])-50, 400, text = "$(gamma_names[2]): $(µ[2])\nFWHM = $(fwhm[2])"; align = (:left, :center), fontsize = 16)
+ylims!(ax, 0.5, nothing)
+xlims!(ax, 500, nothing)
+Makie.text!(ustrip(µ[1])+50, 1000, text = "$(gamma_names[1]): $(µ[1])\nFWHM = $(fwhm[1])"; align = (:right, :center), fontsize = 16)
+Makie.text!(ustrip(µ[2])-50, 1000, text = "$(gamma_names[2]): $(µ[2])\nFWHM = $(fwhm[2])"; align = (:left, :center), fontsize = 16)
 fig
 
 plt_folder = LegendDataManagement.LDMUtils.get_pltfolder(asic, filekey, :spectrum) * "/"
@@ -60,3 +61,9 @@ if !isdir(plt_folder)
 end
 plt_name = plt_folder * _get_pltfilename(asic, filekey, channel, Symbol("spectrum_$(e_type)"))
 save(plt_name, fig)
+
+vlines!(ax, [1450, 1470], color = :red, linestyle = :dash)
+fig
+
+# find waveforms of large peaks 
+hit_par.eventnumber[findall( 1450u"keV" .< hit_par.e_trap .< 1470u"keV")]

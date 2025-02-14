@@ -25,11 +25,11 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_hit.jl")
 # inputs
 reprocess = true
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(13)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = :cal 
-e_types = [:e_trap, :e_cusp]
+e_types = [:e_trap]#, :e_cusp]
 
 # do processing 
 process_hit(asic, period, run, category, channel; reprocess = reprocess, e_types = e_types)

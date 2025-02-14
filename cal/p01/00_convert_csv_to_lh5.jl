@@ -10,7 +10,7 @@ include("$(@__DIR__)/$relPath/utils/utils_IO.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
-run = DataRun(13)
+run = DataRun(14)
 channel = ChannelId(1)
 category = :cal 
 ti = 0.0u"µs"..550.0u"µs" # time interval within waveform is truncated and saved (to reduce file size)

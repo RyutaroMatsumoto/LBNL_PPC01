@@ -16,8 +16,8 @@ include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(6)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = :cal 
 

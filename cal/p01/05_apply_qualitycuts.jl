@@ -13,8 +13,8 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_qualitycuts.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(13)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = :cal 
 

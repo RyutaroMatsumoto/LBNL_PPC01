@@ -18,7 +18,7 @@ relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__)
 include("$relPath/hpge-ana/utils/utils_plot.jl")
 
 # inputs and setup 
-period = DataPeriod(1)
+period = DataPeriod(3)
 run = DataRun(1)
 channel = ChannelId(1)
 category = :cal 

@@ -31,7 +31,7 @@ period = DataPeriod(1)
 run = DataRun(1)
 channel = ChannelId(1)
 category = DataCategory(:cal)
-filter_types = [:trap, :cusp]
+filter_types = [:trap]#, :cusp]
 
 Plots_theme()
 # load configs and modify if needed 
