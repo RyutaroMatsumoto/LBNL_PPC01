@@ -1,3 +1,7 @@
+# Purpose: Apply quality cuts to the data.
+# 1. load quality cut (qc) configuration. this is where cut thresholds are defined.
+# 2. apply quality cuts to the data.
+# 3. save quality cut results (overall cut efficiency and flag (cut/not cut) for each waveform ) to rpars 
 using LegendDataManagement
 using LegendDataManagement: readlprops, writelprops
 using LegendDataManagement.LDMUtils
@@ -14,7 +18,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_qualitycuts.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(1)
 channel = ChannelId(1)
 category = :cal 
 

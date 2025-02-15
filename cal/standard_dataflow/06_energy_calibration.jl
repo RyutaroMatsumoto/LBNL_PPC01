@@ -1,3 +1,11 @@
+# Purpose: Perform energy calibration for a given channel and period/run.
+# 1. load energy calibration (ecal) configuration. this is where calibration parameters, such as gamma lines or energy windows, are defined.
+# 2. perform "simple calibration" - peak search on uncalibrated data
+# 3. perform actual energy calibration - fit peaks to known gamma lines and extract calibration parameters
+# 4. fit calibration curve
+# 5. fit resolution curve
+# 6. save calibration parameters to rpars
+# several sanity plots document this procedure and are automatically saved in jlplt tier 
 using LegendDataManagement
 using LegendDataManagement: readlprops, writelprops
 using LegendDataManagement.LDMUtils
@@ -24,7 +32,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 reprocess = true 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(1)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_cusp]

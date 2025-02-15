@@ -25,8 +25,8 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(3)
-run = DataRun(2)
+period = DataPeriod(2)
+run = DataRun(4)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
@@ -47,17 +47,3 @@ display(plt)
 
 # sanity check: read decay time pars
 pars_pz = asic.par.rpars.pz[period, run, channel]
-
-# ## DEBUG 
-# data = asic
-# if peak == :all 
-#     data_peak = read_ldata(data, DataTier(:raw), filekeys, channel)
-# else
-#     data_peak  = read_ldata((peak), data, :jlpeaks, category, period, run, channel)
-# end 
-# wvfs = data_peak.waveform
-# decay_times = dsp_decay_times(wvfs, bl_window, tail_window)
-
-# cuts_τ = cut_single_peak(decay_times, min_τ, max_τ,; n_bins=100, relative_cut=0.25)
-# result, report = fit_single_trunc_gauss(decay_times, cuts_τ)
-# Plots.plot(report, legend = false)

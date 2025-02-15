@@ -19,7 +19,7 @@ csv_folder = asic.tier[DataTier(:raw_csv), category , period, run]
 # convert csv files to lh5 files 
 csv_to_lh5(asic, period, run, category, channel, csv_folder; csv_heading = 14, nChannels = 1, nwvfmax = NaN, ti = ti)
 
-## Cross checks 
+### Cross checks 
 # read waveforms as sanity check 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 data = read_ldata(asic, DataTier(:raw), filekeys, channel)
@@ -37,7 +37,7 @@ time_per_100kwvf_h = time_per_wvf_h * 100e3
 data.waveform[1].signal
 uconvert(u"ns",step(data.waveform[1].time))
 
-# plot random waveform
+# plot random waveform to check if conversion was successful
 begin
     i = rand(1:length(data.waveform))
     Plots.plot(data.waveform[i] , label = "waveform $i")

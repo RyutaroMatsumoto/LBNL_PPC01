@@ -1,4 +1,4 @@
-# convert csv files from oscilloscope to LEGEND-style hdf5-files. 
+# convert .ecsv files from SkuTek "FemtoDAQ Vireo" to LEGEND-style hdf5-files. 
 using LegendDataManagement
 using TypedTables
 using Plots 
@@ -21,13 +21,7 @@ category = :cal
 csv_folder = asic.tier[DataTier(:raw_csv), category , period, run]
 timestep = 0.01u"µs"
 
-skutek_csv_to_lh5(asic, period, run, category, channel, csv_folder; timestep = timestep)
-
-# test resting this data 
-filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
-data_raw = Table(read_ldata(asic, DataTier(:raw), filekeys[2], channel))
-
-a = 1
+# skutek_csv_to_lh5(asic, period, run, category, channel, csv_folder; timestep = timestep)
 
 ## DEBUG 
 # # start funcion 
