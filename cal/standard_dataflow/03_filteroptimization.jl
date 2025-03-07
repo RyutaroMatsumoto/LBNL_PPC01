@@ -12,7 +12,7 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using Plots
+using Makie, LegendMakie, CairoMakie
 using Measures
 using Optim
 using BSplineKit
@@ -27,13 +27,13 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_filteropt.jl")
 
 # inputs 
 asic = LegendData(:ppc01)
-period = DataPeriod(3)
+period = DataPeriod(1)
 run = DataRun(1)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 filter_types = [:trap]#, :cusp]
 
-Plots_theme()
+# Plots_theme()
 # load configs and modify if needed 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)

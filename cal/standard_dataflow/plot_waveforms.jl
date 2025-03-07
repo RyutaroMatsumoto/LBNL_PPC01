@@ -6,7 +6,7 @@ using HDF5, LegendHDF5IO
 using PropDicts
 using Unitful
 using TypedTables
-using CairoMakie, LegendPlots 
+using CairoMakie, LegendMakie, Makie
 using Measures
 using LegendDSP
 using RadiationDetectorDSP
@@ -19,7 +19,7 @@ include("$relPath/hpge-ana/utils/utils_plot.jl")
 
 # inputs and setup 
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(31)
 channel = ChannelId(1)
 category = :cal 
 asic = LegendData(:ppc01)

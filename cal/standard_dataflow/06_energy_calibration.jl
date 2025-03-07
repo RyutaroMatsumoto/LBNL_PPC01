@@ -18,7 +18,9 @@ using Unitful
 using TypedTables
 using Statistics, StatsBase
 using IntervalSets
-using Plots 
+using LinearAlgebra
+# using Plots 
+using Makie, LegendMakie, CairoMakie
 using Unitful, Measures
 using Measurements: value as mvalue
 
@@ -32,7 +34,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 reprocess = true 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(2)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_cusp]

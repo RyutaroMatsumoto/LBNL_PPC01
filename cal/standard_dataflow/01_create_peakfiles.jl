@@ -20,7 +20,7 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using CairoMakie, LegendPlots
+using Makie, CairoMakie, LegendMakie
 using Measures
 
 # include relevant functions 
@@ -35,7 +35,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 reprocess = true
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(3)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 source = :co60

@@ -1,6 +1,6 @@
 using LegendDataManagement
 using LegendDataManagement.LDMUtils
-using CairoMakie, LegendPlots
+using CairoMakie, LegendMakie, Makie
 using LegendHDF5IO
 using Unitful
 using TypedTables
@@ -61,7 +61,7 @@ for i in 5:8#eachindex(runs)
     local x = ustrip.(risetimes[i]) .*1e3
     local xmax = quantile(x, 0.8)
     filter!(x -> x <= xmax, x)  
-     stephist!(ax, x, bins = 200,   color = colors[i])
+    stephist!(ax, x, bins = 200,   color = colors[i])
     hist!(ax, x, bins = 200, color = (colors[i], 0.4), label = "$(bias_kV[i]) kV",) 
 end 
 axislegend("Bias voltage", position = :lt)

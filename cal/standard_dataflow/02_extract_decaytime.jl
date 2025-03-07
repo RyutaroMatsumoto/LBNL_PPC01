@@ -15,8 +15,10 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using Plots
+using CairoMakie, Makie, LegendMakie
+using Plots 
 using Measures
+using LinearAlgebra
 
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
@@ -25,8 +27,8 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(2)
-run = DataRun(4)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
@@ -47,3 +49,5 @@ display(plt)
 
 # sanity check: read decay time pars
 pars_pz = asic.par.rpars.pz[period, run, channel]
+
+

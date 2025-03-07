@@ -1,14 +1,10 @@
 using LegendDataManagement
 using LegendDataManagement.LDMUtils
-using CairoMakie, LegendPlots
-# using LegendSpecFits
+using CairoMakie, LegendMakie, Makie
 using LegendHDF5IO
-# using RadiationSpectra
 using PropDicts
 using TypedTables
 using Statistics, StatsBase
-# using IntervalSets
-# using Plots 
 using Unitful, Measures
 using Measurements: value as mvalue
 

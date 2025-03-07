@@ -2,7 +2,6 @@ using LegendDataManagement
 using LegendDataManagement: readlprops
 using LegendDataManagement.LDMUtils
 using LegendHDF5IO
-using Plots 
 
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
@@ -29,4 +28,9 @@ process_dsp(asic, period, run, category, channel, dsp_config, τ_pz, pars_filter
 dsp_pars = read_ldata(asic, :jldsp, category, period, run, channel);
 Table(dsp_pars)
 columnnames(Table(dsp_pars))
-stephist(dsp_pars.e_trap)
+
+using Makie, LegendMakie, CairoMakie
+fig = Figure()
+ax = Axis(fig[1, 1], xlabel = "Energy (ADC)", ylabel = "Counts / bin", limits = ((nothing, nothing), (0, nothing)))
+hist!(ax, filter!(isfinite, dsp_pars.e_trap), bins = 100)
+fig
