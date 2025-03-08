@@ -5,7 +5,7 @@
 using LegendDataManagement
 using LegendDataManagement: readlprops, writelprops
 using LegendDataManagement.LDMUtils
-using LegendHDF5IO
+using LegendHDF5IO, HDF5
 using PropDicts
 using Unitful
 using TypedTables
@@ -18,7 +18,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_qualitycuts.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(31)
 channel = ChannelId(1)
 category = :cal 
 
@@ -30,6 +30,9 @@ process_qualitycuts(asic, period, run, category, channel; reprocess = true, qc_c
 # read quality cuts from pars 
 qc = asic.par.rpars.qc[period][run][channel]
 qc.wvf_keep.all
-
 sum(qc.wvf_keep.all)
 qc.qc_surv.all
+
+# test if the quality cuts are also saved in dsp tier 
+dsp_par = Table(read_ldata(asic, :jldsp, category, period, run, channel))
+e_trap = dsp_par.e_trap[dsp_par.qc]

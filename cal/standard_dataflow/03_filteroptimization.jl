@@ -27,8 +27,8 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_filteropt.jl")
 
 # inputs 
 asic = LegendData(:ppc01)
-period = DataPeriod(1)
-run = DataRun(1)
+period = DataPeriod(3)
+run = DataRun(2)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 filter_types = [:trap]#, :cusp]

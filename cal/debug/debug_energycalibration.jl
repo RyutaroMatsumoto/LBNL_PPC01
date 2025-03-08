@@ -45,17 +45,30 @@ gamma_names = ecal_config[Symbol("$(source)_names")]
 fit_funcs = Symbol.(ecal_config[Symbol("$(source)_fit_func")])
 gamma_lines_dict = Dict(gamma_names .=> gamma_lines)
 
-# read quality cuts from pars
-qc = data.par.rpars.qc[period][run][channel]
+
 
 # read dsp parameters
 dsp_pars = Table(read_ldata(data, :jldsp, category, period, run, channel);)
+
+@debug "Loaded CTC parameters"
+pars_ctc = get_values(data.par.rpars.ctc[period, run, channel])
+filekey = search_disk(FileKey, data.tier[DataTier(:raw), category , period, run])[1]
+det = _channel2detector(data, channel)
+
 fs = 12
-e_type = :e_trap 
-   
-# select energy filter and apply qc
-e_uncal = getproperty(dsp_pars, Symbol("$e_type"))[findall(qc.wvf_keep.all)]
-e_uncal_func = "$e_type"
+e_type = :e_trap_ctc 
+ 
+# load uncalibrated energies after qc and apply ctc if needed
+if endswith(string(e_type), "_ctc")
+    qdrift = e_uncal = getproperty(dsp_pars, :qdrift)[dsp_pars.qc]
+    @debug "Apply CT correction for $e_type"
+    e_uncal_func = pars_ctc[e_type_name].func
+    e_uncal = ljl_propfunc(e_uncal_func).(Table(NamedTuple{(e_type_name, :qdrift)}((e_uncal, qdrift))))
+else
+    e_type_name = Symbol(split(string(e_type), "_ctc")[1])
+    e_uncal = getproperty(dsp_pars, e_type_name)[dsp_pars.qc]
+    e_uncal_func = "$e_type"
+end
 
 # do simple calibration and plot 
 result_simple, report_simple = simple_calibration(e_uncal, gamma_lines , left_window_sizes, right_window_sizes,; 
