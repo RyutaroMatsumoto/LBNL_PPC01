@@ -23,6 +23,16 @@ using TypedTables
 using CairoMakie, Plots
 using Measures
 
+<<<<<<< HEAD:cal/standard_dataflow/01_create_peakfiles.jl
+=======
+# set data configuration (where to find data; and where to save results)
+# if gethostname() == "Lisas-MacBook-Pro.local"
+#     ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
+# else # on NERSC 
+    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/PPC01_ryutaro/config.json"
+# end 
+
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c:cal/p01/01_create_peakfiles.jl
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/processing_funcs/process_peak_split.jl")
@@ -34,8 +44,13 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 # inputs
 reprocess = true
 asic = LegendData(:ppc01)
+<<<<<<< HEAD:cal/standard_dataflow/01_create_peakfiles.jl
 period = DataPeriod(3)
 run = DataRun(35)
+=======
+period = DataPeriod(1)
+run = DataRun(3)
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c:cal/p01/01_create_peakfiles.jl
 channel = ChannelId(1)
 category = DataCategory(:cal)
 source = :co60
@@ -54,6 +69,11 @@ catch e
   println("Skipping to next file.")
 end
 
+<<<<<<< HEAD:cal/standard_dataflow/01_create_peakfiles.jl
 # read peakfiles 
 data_peak  = read_ldata(:Co60a, asic, :jlpeaks, category, period, run, channel)
 data_peak.waveform
+=======
+# plots 
+display(plts[3])
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c:cal/p01/01_create_peakfiles.jl

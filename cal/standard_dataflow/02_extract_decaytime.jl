@@ -16,8 +16,19 @@ using StatsBase, IntervalSets
 using Unitful
 using TypedTables
 using Plots
+using Plots: plot!
 using Measures
 
+<<<<<<< HEAD:cal/standard_dataflow/02_extract_decaytime.jl
+=======
+# set data configuration (where to find data; and where to save results)
+# if gethostname() == "Lisas-MacBook-Pro.local"
+#     ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
+# else # on NERSC 
+    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/PPC01_ryutaro/config.json"
+# end 
+
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c:cal/p01/02_extract_decaytime.jl
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/processing_funcs/process_decaytime.jl")
@@ -25,8 +36,13 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 
 # inputs
 asic = LegendData(:ppc01)
+<<<<<<< HEAD:cal/standard_dataflow/02_extract_decaytime.jl
 period = DataPeriod(3)
 run = DataRun(38)
+=======
+period = DataPeriod(1)
+run = DataRun(3)
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c:cal/p01/02_extract_decaytime.jl
 channel = ChannelId(1)
 category = DataCategory(:cal)
 

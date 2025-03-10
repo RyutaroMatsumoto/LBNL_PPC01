@@ -17,6 +17,16 @@ using Plots, CairoMakie
 using Measures
 using Distributions
 
+<<<<<<< HEAD
+=======
+# set data configuration (where to find data; and where to save results)
+# if gethostname() == "Lisas-MacBook-Pro.local"
+#     ENV["LEGEND_DATA_CONFIG"] = "/Users/lisa/Documents/Workspace/LEGEND/LBL_ASIC/ASIC_data/ppc01/config.json"
+# else # on NERSC 
+    ENV["LEGEND_DATA_CONFIG"] = "/global/cfs/projectdirs/m2676/data/teststands/lbnl/PPC01_ryutaro/config.json"
+# end 
+
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
 # load functions from hpge-ana
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/processing_funcs/process_decaytime.jl")
@@ -37,9 +47,19 @@ filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run
 data = read_ldata(asic, DataTier(:raw), filekeys, channel)
 wvfs = data.waveform
 Plots.plot(wvfs[rand(1:length(wvfs))], title = "Example waveform", xlabel = "Time", ylabel = "Amplitude [V]", legend = false)
+<<<<<<< HEAD
 
 bl_window = 0.0u"µs" .. 18.0u"µs"
 tail_window = 22.0u"µs" .. 131.0u"µs"
+=======
+# if run == DataRun(4)
+#     bl_window = 0.0u"µs" .. 37.0u"µs"
+#     tail_window = 45.0u"µs" .. 199.0u"µs"
+# else
+    bl_window = 0.0u"µs" .. 18.0u"µs"
+    tail_window = 22.0u"µs" .. 130.0u"µs"
+# end 
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
 Plots.vline!([leftendpoint(bl_window), rightendpoint(bl_window)], label = "baseline", color = :red)
 Plots.vline!([leftendpoint(tail_window), rightendpoint(tail_window)], label = "tail", color = :violet)
 
@@ -48,11 +68,19 @@ decay_times = dsp_decay_times(wvfs, bl_window, tail_window)
 filter!(x -> 0u"µs" < x < 1000u"µs", decay_times)
 Plots.stephist(decay_times, bins = 100, xlabel = "Decay time", ylabel = "Counts", title = "Decay times of waveforms", label = false)
 decay_time_pz = nothing
+<<<<<<< HEAD
 # try 
     min_τ = 250.0u"µs"
     max_τ = 350.0u"µs"
     # if run < DataRun(3)
     rel_cut_fit = 0.25 
+=======
+try 
+    min_τ = 250.0u"µs"
+    max_τ = 310.0u"µs"
+    # if run < DataRun(3)
+    rel_cut_fit = 0.3
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
     # else  
     #     rel_cut_fit = 0.1
     # end 
@@ -60,6 +88,7 @@ decay_time_pz = nothing
 
     cuts_τ = cut_single_peak(decay_times, min_τ, max_τ,; n_bins=nbins, relative_cut=rel_cut_fit)
     result_τ, report = fit_single_trunc_gauss(decay_times, cuts_τ)
+<<<<<<< HEAD
     p = Plots.plot(report, legend = :outertop)
     display(p)
     @info "truncated gaus fit - done"
@@ -75,6 +104,23 @@ decay_time_pz = nothing
 #         decay_time_pz = median(decay_times)
 #     end 
 # end 
+=======
+    p = Plots.plot(report,label = false)
+    display(p)
+    @info "truncated gaus fit - done"
+    decay_time_pz = mvalue(result_τ.µ) # decay time for pole-zero 
+catch e
+    try 
+         @info "do simple gaussian fit instead"
+        # filter!(x -> 100u"µs" < x < 400u"µs", decay_times)
+        Plots.stephist(decay_times, bins = 100, xlabel = "Decay time", ylabel = "Counts", title = "Decay times of waveforms", label = false)
+        result_τ   = fit(Normal,ustrip.(decay_times))
+        decay_time_pz = result_τ.µ*u"µs" # decay time for pole-zero 
+    catch e
+        decay_time_pz = median(decay_times)
+    end 
+end 
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
 
 ## 3. do very simple dsp using trap filter 
 t0_threshold = 0.01
@@ -118,11 +164,19 @@ dsp_par =   Table(blmean = bl_stats.mean, blslope = bl_stats.slope,
 # DSP done. 
 
 # 4. apply some very rough quality cuts  
+<<<<<<< HEAD
 if run < DataRun(4) 
     dsp_par = filter(x -> 20.0u"µs" .< x.t0 .< 30.0u"µs", dsp_par)
 else
     dsp_par = filter(x -> 35.0u"µs" .< x.t0 .< 55.0u"µs", dsp_par)
 end
+=======
+# if run < DataRun(4) 
+#     dsp_par = filter(x -> 20.0u"µs" .< x.t0 .< 30.0u"µs", dsp_par)
+# else
+    dsp_par = filter(x -> 17.5u"µs" .< x.t0 .< 20.0u"µs", dsp_par)
+# end
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
 filter!(x ->  x.e_trap .> 0.0, dsp_par)
 filter!(x -> abs(x.blslope) .< 0.002 * 1/u"µs", dsp_par)
 
@@ -138,17 +192,26 @@ fit_funcs = [Symbol.(ecal_config[Symbol("$(source)_fit_func")])[1]]
 gamma_lines_dict = Dict(gamma_names .=> gamma_lines)
 e_uncal = dsp_par.e_trap
 p = Plots.stephist(e_uncal, bins = 200)
+<<<<<<< HEAD
 if run < DataRun(3)
     q = 0.5
 else
     q = 0.25
 end
+=======
+# if run < DataRun(3)
+#     q = 0.5
+# else
+    q = 0.70
+# end
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
 vline!([quantile(e_uncal,q)])
 cal_simple = gamma_lines[1] / quantile(e_uncal,q)
 
 # roughly calibrated spectrum 
 e_cal = e_uncal .* cal_simple
 Plots.stephist(e_cal, xlabel = "Energy", bins = 0:10:3000)
+<<<<<<< HEAD
 if run < DataRun(4)
     emin = 800
     emax = 1400
@@ -158,6 +221,17 @@ else
     emax = 1300
     bins = 0:10:3000
 end
+=======
+# if run < DataRun(4)
+#     emin = 800
+#     emax = 1400
+#     bins = 0:20:3000
+# else
+    emin = 1150
+    emax = 1190
+    bins = 0:10:3000
+# end
+>>>>>>> bd32341c0f9bde80f2aff9a94eedd2234c34bb9c
 Plots.vline!([emin])
 Plots.vline!([emax])
 
