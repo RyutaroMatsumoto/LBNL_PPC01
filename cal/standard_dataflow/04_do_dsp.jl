@@ -12,7 +12,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_dsp.jl")
 # inputs 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(35)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
@@ -29,4 +29,4 @@ process_dsp(asic, period, run, category, channel, dsp_config, τ_pz, pars_filter
 dsp_pars = read_ldata(asic, :jldsp, category, period, run, channel);
 Table(dsp_pars)
 columnnames(Table(dsp_pars))
-stephist(dsp_pars.e_trap)
+Plots.stephist(dsp_pars.e_trap, nbins=1000)

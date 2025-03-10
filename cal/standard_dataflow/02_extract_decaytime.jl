@@ -25,13 +25,16 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(2)
-run = DataRun(4)
+period = DataPeriod(3)
+run = DataRun(38)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
 # load config: 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
+if isempty(filekeys)
+    error("filekeys is empty")
+end
 pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 min_τ, max_τ = pz_config.min_tau, pz_config.max_tau

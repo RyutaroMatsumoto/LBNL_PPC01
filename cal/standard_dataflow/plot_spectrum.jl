@@ -1,6 +1,6 @@
 using LegendDataManagement
 using LegendDataManagement.LDMUtils
-using CairoMakie, LegendPlots
+using CairoMakie, Plots
 # using LegendSpecFits
 using LegendHDF5IO
 # using RadiationSpectra
@@ -22,17 +22,18 @@ include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(31)
 channel = ChannelId(1)
 det = _channel2detector(asic, channel)
 category = :cal 
 e_type = :e_trap
 
 # load calibrated energy spectrum 
-hit_par = Table(read_ldata(asic, :jlhit, category, period, run))
+hit_par = Table(read_ldata(asic, :jlhit, category, period, run, channel))
 hit_par = hit_par[hit_par.qc]
 ecal = getproperty(hit_par, e_type)
 filekey = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])[1]
+
 ecal_config = dataprod_config(asic).energy(filekey).default
 µ_literature = round.(ustrip.(ecal_config.co60_lines), digits = 1)
 gamma_names = ecal_config.co60_names
@@ -49,8 +50,8 @@ ax = Axis(fig[1, 1],
         ylabel = "Counts",
         titlesize = 16)
 hist!(fig[1, 1], ustrip.(ecal), bins = 500:1:1600)
-ylims!(ax, 0.5, nothing)
-xlims!(ax, 500, nothing)
+Makie.ylims!(ax, 0.5, nothing)
+Makie.xlims!(ax, 500, nothing)
 Makie.text!(ustrip(µ[1])+50, 1000, text = "$(gamma_names[1]): $(µ[1])\nFWHM = $(fwhm[1])"; align = (:right, :center), fontsize = 16)
 Makie.text!(ustrip(µ[2])-50, 1000, text = "$(gamma_names[2]): $(µ[2])\nFWHM = $(fwhm[2])"; align = (:left, :center), fontsize = 16)
 fig
@@ -60,6 +61,7 @@ if !isdir(plt_folder)
     mkdir(plt_folder)
 end
 plt_name = plt_folder * _get_pltfilename(asic, filekey, channel, Symbol("spectrum_$(e_type)"))
+plt_name_specfits_co60_branch = replace(plt_name, ".png" => "") * "_specfits_co60_branch.png"
 save(plt_name, fig)
 
 vlines!(ax, [1450, 1470], color = :red, linestyle = :dash)

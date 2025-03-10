@@ -20,7 +20,7 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using CairoMakie, LegendPlots
+using CairoMakie, Plots
 using Measures
 
 # include relevant functions 
@@ -35,7 +35,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 reprocess = true
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(35)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 source = :co60
@@ -46,11 +46,14 @@ qc_config = dataprod_config(asic).qc(filekeys[1]).default
 ecal_config = dataprod_config(asic).energy(filekeys[1]).default
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 
-# run processor 
-report = process_peak_split(asic, period, run, category, channel, ecal_config, dsp_config, qc_config ; reprocess = reprocess)   
+# run processor
+try
+  report = process_peak_split(asic, period, run, category, channel, ecal_config, dsp_config, qc_config ; reprocess = reprocess, plotHist = true)
+catch e
+  println("Error processing peak split: ", e)
+  println("Skipping to next file.")
+end
 
 # read peakfiles 
 data_peak  = read_ldata(:Co60a, asic, :jlpeaks, category, period, run, channel)
 data_peak.waveform
-
-

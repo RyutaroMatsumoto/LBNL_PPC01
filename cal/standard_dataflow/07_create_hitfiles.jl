@@ -26,7 +26,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_hit.jl")
 reprocess = true
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(31)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_cusp]
@@ -39,7 +39,7 @@ hit_par = Table(read_ldata(asic, :jlhit, category, period, run))
 
 # 
 Plots_theme()
-bins = 450:0.2:1500
-stephist(hit_par.e_trap, bins = bins, fill = true, color = :silver,label = "Before qc", ylims = [1, 100], yscale = :log10)
-stephist!(hit_par.e_trap[hit_par.qc], bins = bins, fill = true, alpha = 0.5, color = :violet, label = "After qc", xlabel = "Calibrated energy", ylabel = "Counts", legend = :topleft)
+bins = 1000:0.2:2500
+Plots.stephist(hit_par.e_trap, bins = bins, fill = true, color = :silver,label = "Before qc", ylims = [1, 100], yscale = :log10)
+Plots.stephist!(hit_par.e_trap[hit_par.qc], bins = bins, fill = true, alpha = 0.5, color = :violet, label = "After qc", xlabel = "Calibrated energy", ylabel = "Counts", legend = :topleft)
 

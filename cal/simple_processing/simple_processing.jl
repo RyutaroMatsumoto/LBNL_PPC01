@@ -36,7 +36,7 @@ Plots_theme()
 # setup 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(30)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 det = _channel2detector(asic, channel)
@@ -47,7 +47,7 @@ data = read_ldata(asic, DataTier(:raw), filekeys, channel)
 wvfs = data.waveform
 Plots.plot(wvfs[rand(1:length(wvfs))], title = "Example waveform", xlabel = "Time", ylabel = "Amplitude [V]", label = "raw waveform")
 
-bl_window = 0.0u"µs" .. 7.0u"µs"
+bl_window = 0.0u"µs" .. 6.7u"µs"
 tail_window = 9.0u"µs" .. 40.0u"µs"
 Plots.vline!([leftendpoint(bl_window), rightendpoint(bl_window)], label = "baseline", color = :red)
 Plots.vline!([leftendpoint(tail_window), rightendpoint(tail_window)], label = "tail", color = :violet)
@@ -98,11 +98,12 @@ pz_stats = signalstats.(wvfs, leftendpoint(tail_window), rightendpoint(tail_wind
 t0 = get_t0(wvfs, t0_threshold)
 t10 = get_threshold(wvfs, wvf_max .* 0.1)
 t50 = get_threshold(wvfs, wvf_max .* 0.5)
+
 t90 = get_threshold(wvfs, wvf_max .* 0.9)
 
 # trap-filter: signal estimator for precise energy reconstruction
-trap_rt = 1.5u"µs"
-trap_ft = 1.0u"µs"
+trap_rt = 2.7u"µs"
+trap_ft = 2.2u"µs"
 uflt_trap_rtft = TrapezoidalChargeFilter(trap_rt, trap_ft)
 signal_estimator = SignalEstimator(PolynomialDNI(3, 100u"ns"))
 e_trap = signal_estimator.(uflt_trap_rtft.(wvfs), t50 .+ (trap_rt + trap_ft/2))
@@ -124,14 +125,14 @@ filter!(x ->  0.0 .< x.e_trap, dsp_par_qc)
 # filter!(x -> abs(x.blslope) .< 0.002 * 1/u"µs", dsp_par)
 
 # look at uncalibrated spectrum: 
-Plots.stephist(dsp_par.e_trap, bins = 1000, xlabel = "Energy (a.u.)", ylabel = "Counts", title = "Uncalibrated energy spectrum (e_trap)", label = false, fill = true)
+Plots.stephist(dsp_par.e_trap, bins = 1000,xlims=(1500, 2500), xlabel = "Energy (a.u.)", ylabel = "Counts", title = "Uncalibrated energy spectrum (e_trap)", label = false, fill = true)
 
 # energy calibration "by eye" 
 gamma_lines =  [1173.237u"keV", 1332.501u"keV"]
 window_size =  [10.0u"keV", 10.0u"keV"]
-e_uncal_range = 900.0..1150.0
+e_uncal_range = 1750.0..2000.0
 Plots.stephist(filter(x-> leftendpoint(e_uncal_range) <= x <= rightendpoint(e_uncal_range), dsp_par.e_trap), bins = 1000, xlabel = "Energy (a.u.)", ylabel = "Counts", title = "Uncalibrated energy spectrum (e_trap)", label = false, fill = true)
-peapos = 957#0.2355 #
+peapos = 1812#0.2355 #
 vline!([peapos], linewidth = 1.5, color = :red2, label =  "peak guess")
 cal_simple = gamma_lines[1] / peapos
 
@@ -156,7 +157,7 @@ fwhm = map(x-> x.σ*2.355, result_fit)
 
 # plot fit 
 plts = [Plots.plot(report_fit[i], legend = false, title = @sprintf("\n FWHM = (%.1f ± %.1f) keV at E = %.0f keV , ", mvalue(ustrip(fwhm[i])), muncert(ustrip(fwhm[i])),mvalue(ustrip(gamma_lines[i]))), titlefontsize = 16) for i in eachindex(report_fit)] #
-fig = Plots.plot(plts..., layout = (2, 1), size = (550, 710), left_margin = 10mm, thickness_scaling = 0.7, xlabel = "Energy (keV)")
+ fig = Plots.plot(plts..., layout = (2, 1), size = (550, 710), left_margin = 10mm, thickness_scaling = 0.7, xlabel = "Energy (keV)")
 
 
 # save figure 

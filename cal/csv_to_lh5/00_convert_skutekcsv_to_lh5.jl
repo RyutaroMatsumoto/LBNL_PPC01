@@ -13,7 +13,7 @@ include("$(@__DIR__)/$relPath/utils/utils_IO.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(43)
 channel = ChannelId(1)
 category = :cal 
 
@@ -25,4 +25,4 @@ skutek_csv_to_lh5(asic, period, run, category, channel, csv_folder; timestep = t
 
 # test resting this data 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
-data_raw = Table(read_ldata(asic, DataTier(:raw), filekeys[2], channel))
+data_raw = Table(read_ldata(asic, DataTier(:raw), filekeys[1], channel))
