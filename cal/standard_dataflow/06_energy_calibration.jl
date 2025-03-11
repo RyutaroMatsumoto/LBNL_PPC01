@@ -18,7 +18,9 @@ using Unitful
 using TypedTables
 using Statistics, StatsBase
 using IntervalSets
-using Plots 
+using LinearAlgebra
+# using Plots 
+using Makie, LegendMakie, CairoMakie
 using Unitful, Measures
 using Measurements: value as mvalue
 
@@ -36,7 +38,7 @@ period = DataPeriod(3)
 run = DataRun(31)
 channel = ChannelId(1)
 category = :cal 
-e_types = [:e_trap]#, :e_cusp]
+e_types = [:e_trap_ctc, :e_trap]#, :e_cusp]
 
 # load configuration for calibration
 filekey = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])[1]
@@ -48,7 +50,7 @@ process_energy_calibration(asic, period, run, category, channel, ecal_config; re
 # read calibration parameters
 
 asic.par.rpars.ecal[period, run, channel].e_trap
-asic.par.rpars.ecal[period, run, channel].e_trap.fit.Co60a.fwhm
-asic.par.rpars.ecal[period, run, channel].e_trap.fit.Co60b.fwhm
+asic.par.rpars.ecal[period, run, channel].e_trap_ctc.fit.Co60a.fwhm
+asic.par.rpars.ecal[period, run, channel].e_trap_ctc.fit.Co60b.fwhm
 
 

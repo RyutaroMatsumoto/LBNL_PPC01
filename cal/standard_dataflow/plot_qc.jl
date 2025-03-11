@@ -2,7 +2,11 @@
 using LegendDataManagement
 using LegendDataManagement.LDMUtils: get_pltfolder
 using LegendHDF5IO
+<<<<<<< HEAD
 using CairoMakie, Plots 
+=======
+using CairoMakie, LegendMakie, Makie
+>>>>>>> upstream/main
 using Measures
 using PropDicts, TypedTables
 using StatsBase

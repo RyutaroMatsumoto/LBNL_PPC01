@@ -12,7 +12,7 @@ using Unitful
 using TypedTables
 using Statistics, StatsBase
 using IntervalSets
-using Plots 
+using Makie, LegendMakie, CairoMakie 
 using Unitful, Measures
 using Measurements: value as mvalue
 
@@ -37,9 +37,11 @@ process_hit(asic, period, run, category, channel; reprocess = reprocess, e_types
 # read hit files and plot -> sanity check 
 hit_par = Table(read_ldata(asic, :jlhit, category, period, run))
 
-# 
-Plots_theme()
-bins = 1000:0.2:2500
-Plots.stephist(hit_par.e_trap, bins = bins, fill = true, color = :silver,label = "Before qc", ylims = [1, 100], yscale = :log10)
-Plots.stephist!(hit_par.e_trap[hit_par.qc], bins = bins, fill = true, alpha = 0.5, color = :violet, label = "After qc", xlabel = "Calibrated energy", ylabel = "Counts", legend = :topleft)
-
+# sanity plot 
+fig = Figure()
+ax = Axis(fig[1, 1], xlabel = "Calibrated energy", ylabel = "Counts", yscale = log10, limits = ((nothing, nothing), (1, nothing)))
+bins = 300:5:1500
+hist!(ax, ustrip.(filter(isfinite, hit_par.e_trap)), bins = bins,  color = :silver, label = "Before qc")
+hist!(ax, ustrip.(filter(isfinite, hit_par.e_trap[hit_par.qc])), bins = bins, color = :violet, label = "After qc")
+axislegend(ax, position = :lt)
+fig

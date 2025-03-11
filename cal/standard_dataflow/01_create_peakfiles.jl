@@ -20,7 +20,7 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using CairoMakie, Plots
+using Makie, CairoMakie, LegendMakie
 using Measures
 
 # set data configuration (where to find data; and where to save results)
