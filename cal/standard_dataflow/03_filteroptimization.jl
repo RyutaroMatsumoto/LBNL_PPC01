@@ -28,12 +28,11 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_filteropt.jl")
 # inputs 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(39)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 filter_types = [:trap]#, :cusp]
 
-# Plots_theme()
 # load configs and modify if needed 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)

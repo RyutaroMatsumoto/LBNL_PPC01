@@ -36,17 +36,18 @@ category = DataCategory(:cal)
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
-min_τ, max_τ = pz_config.min_tau, pz_config.max_tau
+min_τ, max_τ = 200.0u"µs", 400.0u"µs"#pz_config.min_tau, pz_config.max_tau
 nbins        = pz_config.nbins
 rel_cut_fit  = pz_config.rel_cut_fit
 peak = Symbol(pz_config.peak)
 bl_window = dsp_config.bl_window
 tail_window = dsp_config.tail_window
 
-# run processor
-plt = process_decaytime(asic, period, run, category, channel, min_τ, max_τ, nbins, rel_cut_fit, peak, bl_window, tail_window; reprocess = true)
-display(plt)
-
-# sanity check: read decay time pars
-pars_pz = asic.par.rpars.pz[period, run, channel]
-
+# start debug
+data = asic
+data_peak  = read_ldata((peak), data, :jlpeaks, category, period, run, channel)
+wvfs = data_peak.waveform
+decay_times = dsp_decay_times(wvfs, bl_window, tail_window)
+cuts_τ = cut_single_peak(decay_times, min_τ, max_τ,; n_bins=nbins, relative_cut=rel_cut_fit)
+result, report = fit_single_trunc_gauss(decay_times, cuts_τ)
+lplot(report)

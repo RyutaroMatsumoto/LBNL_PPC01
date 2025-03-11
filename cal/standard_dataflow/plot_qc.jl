@@ -17,7 +17,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(45)
 channel = ChannelId(1)
 category = :cal 
 det = _channel2detector(asic, channel)
@@ -104,7 +104,7 @@ function _plot_qc_waveform_grid(waveforms, waveforms_pz; ncol = 2, nwaveforms = 
         mkpath(pltpath_local)
     end
 
-    colors = LegendPlots.LegendTheme.palette.color[][1:2]
+    colors = LegendMakie.LegendTheme.palette.color[][1:2]
     figs = Vector{Figure}(undef, nplots)
     for j = 1:nplots
         nrow = ceil(Int, nwaveforms/ncol)

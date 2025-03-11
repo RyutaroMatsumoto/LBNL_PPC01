@@ -26,13 +26,15 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_hit.jl")
 reprocess = true
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(1)
+run = DataRun(39)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_cusp]
 
 # do processing 
 process_hit(asic, period, run, category, channel; reprocess = reprocess, e_types = e_types)
+
+asic.par.rpars.ecal[period, run, channel].e_trap.cal.func
 
 # read hit files and plot -> sanity check 
 hit_par = Table(read_ldata(asic, :jlhit, category, period, run))

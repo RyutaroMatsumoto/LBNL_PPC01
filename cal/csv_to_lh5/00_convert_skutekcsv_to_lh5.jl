@@ -1,7 +1,6 @@
 # convert .ecsv files from SkuTek "FemtoDAQ Vireo" to LEGEND-style hdf5-files. 
 using LegendDataManagement
 using TypedTables
-using Plots 
 using CSV, JSON
 using Unitful
 using Dates
@@ -13,7 +12,7 @@ include("$(@__DIR__)/$relPath/utils/utils_IO.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(51)
 channel = ChannelId(1)
 category = :cal 
 

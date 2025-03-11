@@ -35,10 +35,9 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 reprocess = true
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(3)
+run = DataRun(51)
 channel = ChannelId(1)
 category = DataCategory(:cal)
-source = :co60
 
 # load configs 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
@@ -50,7 +49,11 @@ dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 report = process_peak_split(asic, period, run, category, channel, ecal_config, dsp_config, qc_config ; reprocess = reprocess)   
 
 # read peakfiles 
-data_peak  = read_ldata(:Co60a, asic, :jlpeaks, category, period, run, channel)
-data_peak.waveform
+data_peak  = read_ldata((:Tl208FEP), asic, :jlpeaks, category, period, run, channel)
+# data_peak.waveform
+# read peakfiles 
 
-
+fig = Figure()
+ax = Axis(fig[1,1], xlabel = "Energy (keV)")
+hist!(ax, ustrip.(data_peak.e_simplecal), bins = 100)
+fig
