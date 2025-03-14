@@ -9,22 +9,20 @@ channel = ChannelId(1)
 category = DataCategory(:cal)
 
 # plot raw data 
-data_raw  = read_ldata(asic, DataTier(:raw), category, period, run, channel)
+e  = filter(x-> 200 < x < 5000, read_ldata(:daqenergy, asic, DataTier(:raw), category, period, run, channel))
 fig = Figure()
 ax = Axis(fig[1, 1], limits = ((nothing, nothing), (0, nothing)), xlabel = "Pulse height (ADC)", ylabel = "Counts / bin")
-e = filter(x-> 200 < x < 5000, data_raw.daqenergy);
 hist!(ax, e, bins = 100, color = :blue)
 fig 
 
-
 # guess calibration and plot roughly calibrated spectrum 
-fep_adc = 4300
+fep_adc = 4400
 vlines!(ax,[fep_adc], color = :red)
 fig
 c = 2600 ./ fep_adc 
 fig_cal = Figure()
 ax = Axis(fig_cal[1, 1], limits = ((nothing, 4000), (0, nothing)), xlabel = "Pulse height (keV)", ylabel = "Counts / bin")
-Makie.stephist!(ax, e .* c, bins = 100, color = :blue, label = "Th228")
+Makie.hist!(ax, e .* c, bins = 100, color = :blue, label = "Th228")
 fig_cal
 
 gamma_lines = [583.191,  727.330,  860.564,  1592.53,    1620.50,    2103.53,    2614.51]

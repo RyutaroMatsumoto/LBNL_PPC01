@@ -28,7 +28,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(39)
+run = DataRun(52)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
@@ -38,7 +38,7 @@ pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 min_τ, max_τ = pz_config.min_tau, pz_config.max_tau
 nbins        = pz_config.nbins
-rel_cut_fit  = pz_config.rel_cut_fit
+rel_cut_fit  = 0.5#pz_config.rel_cut_fit
 peak = Symbol(pz_config.peak)
 bl_window = dsp_config.bl_window
 tail_window = dsp_config.tail_window

@@ -14,7 +14,7 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using CairoMakie
+using LegendMakie, Makie, CairoMakie
 using Measures
 
 # include relevant functions 
@@ -45,7 +45,7 @@ data = asic
 filekeys = search_disk(FileKey, data.tier[DataTier(:raw), category , period, run])
 
 if Symbol(ecal_config.source) == :co60
-    gamma_lines =  ecal_config.co60_lines
+    gamma_lines =  sort(ecal_config.co60_lines)
     gamma_names =  ecal_config.co60_names
     left_window_sizes = ecal_config.co60_left_window_sizes 
     right_window_sizes = ecal_config.co60_right_window_sizes 
@@ -61,7 +61,7 @@ peakpos = Vector{Vector{<:Real}}(undef, length(filekeys))
 f = 1
 # for f in eachindex(filekeys) 
 filekey = filekeys[f]
-peak_file = peak_files[f]
+# peak_file = peak_files[f]
 data_ch = read_ldata(data, DataTier(:raw), filekey, channel)
 wvfs = data_ch.waveform
 e_uncal = filter(x -> x >= qc_config.e_trap.min , data_ch.daqenergy)
@@ -86,11 +86,11 @@ end
 h_uncals[f] = fit(Histogram, e_uncal, 0:bin_width:maximum(e_uncal)) # histogram over full energy range; stored for plot 
 
 try
-    h_peaksearch = fit(Histogram, e_uncal, 0:bin_width:peak_max) # histogram for peak search
+    h_peaksearch = fit(Histogram, e_uncal, bin_min:bin_width:peak_max) # histogram for peak search
     _, peakpos[f] = RadiationSpectra.peakfinder(h_peaksearch, σ= ecal_config.peakfinder_σ, backgroundRemove=true, threshold = ecal_config.peakfinder_threshold)
 catch e 
     @warn "peakfinder failed for $filekey - use larger window. err $e"
-    h_peaksearch = fit(Histogram, e_uncal, 0:bin_width:(peak_max*1.5)) # histogram for peak search
+    h_peaksearch = fit(Histogram, e_uncal, bin_min:bin_width:(peak_max*1.5)) # histogram for peak search
     _, peakpos[f] = RadiationSpectra.peakfinder(h_peaksearch, σ= ecal_config.peakfinder_σ, backgroundRemove=true, threshold = ecal_config.peakfinder_threshold)
 end 
 if length(peakpos[f]) !== length(gamma_lines)
