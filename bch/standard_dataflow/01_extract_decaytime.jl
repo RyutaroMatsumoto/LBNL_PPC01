@@ -27,10 +27,10 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(3)
-run = DataRun(51)
+period = DataPeriod(1)
+run = DataRun(13)
 channel = ChannelId(1)
-category = DataCategory(:cal)
+category = DataCategory(:bch)
 
 # load config: 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
@@ -38,13 +38,14 @@ pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 min_τ, max_τ = pz_config.min_tau, pz_config.max_tau
 nbins        = pz_config.nbins
-rel_cut_fit  = 0.5#pz_config.rel_cut_fit
+rel_cut_fit  = pz_config.rel_cut_fit
 peak = Symbol(pz_config.peak)
 bl_window = dsp_config.bl_window
 tail_window = dsp_config.tail_window
 
 # run processor
 plt = process_decaytime(asic, period, run, category, channel, min_τ, max_τ, nbins, rel_cut_fit, peak, bl_window, tail_window; reprocess = true)
+
 display(plt)
 
 # sanity check: read decay time pars

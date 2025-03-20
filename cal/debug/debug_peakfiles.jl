@@ -14,7 +14,7 @@ using PropDicts
 using StatsBase, IntervalSets
 using Unitful
 using TypedTables
-using CairoMakie
+using LegendMakie, Makie, CairoMakie
 using Measures
 
 # include relevant functions 
@@ -29,10 +29,10 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 reprocess = true
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(50)
 channel = ChannelId(1)
 category = DataCategory(:cal)
-source = :co60
+source = :th228
 
 # load configs 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
@@ -50,19 +50,17 @@ if Symbol(ecal_config.source) == :co60
     left_window_sizes = ecal_config.co60_left_window_sizes 
     right_window_sizes = ecal_config.co60_right_window_sizes 
 elseif Symbol(ecal_config.source) == :th228
-    gamma_lines =  ecal_config.th228_lines
-    gamma_names =  ecal_config.th228_names
-    left_window_sizes = ecal_config.left_window_sizes 
-    right_window_sizes = ecal_config.right_window_sizes 
+    gamma_lines =  ecal_config.th228_lines[end]
+    gamma_names =  [ecal_config.th228_names[end]]
+    left_window_sizes = 1.5 * ecal_config.th228_left_window_sizes[end]
+    right_window_sizes = 1.5 * ecal_config.th228_right_window_sizes[end] 
 end
 
-h_uncals = Vector{Histogram}(undef, length(filekeys))
-peakpos = Vector{Vector{<:Real}}(undef, length(filekeys))
-f = 1
+
 # for f in eachindex(filekeys) 
-filekey = filekeys[f]
-peak_file = peak_files[f]
-data_ch = read_ldata(data, DataTier(:raw), filekey, channel)
+# filekey = filekeys[f]
+# peak_file = peak_files[f]
+data_ch = read_ldata(data, DataTier(:raw), filekeys, channel)
 wvfs = data_ch.waveform
 e_uncal = filter(x -> x >= qc_config.e_trap.min , data_ch.daqenergy)
 if isempty(e_uncal)
@@ -83,14 +81,51 @@ if (peak_max-peak_min)/bin_width < ecal_config.nbins_min
 end
 
 # peak search
-h_uncals[f] = fit(Histogram, e_uncal, 0:bin_width:maximum(e_uncal)) # histogram over full energy range; stored for plot 
+# h_uncal = fit(Histogram, e_uncal, 0:bin_width:maximum(e_uncal)) # histogram over full energy range; stored for plot 
+
+peakpos = []
+function _peakfinder(p_min::T, p_max::T) where T <: Real
+    try 
+        h_peaksearch = fit(Histogram, e_uncal, p_min:bin_width:p_max) # histogram for peak search
+        _, peakpos = RadiationSpectra.peakfinder(h_peaksearch, σ= ecal_config.peakfinder_σ, backgroundRemove=true, threshold = ecal_config.peakfinder_threshold)
+        @info "Found $(length(peakpos)) peak(s) at $(peakpos)"
+        return peakpos
+    catch e
+        @info "peakfinder failed: $e"
+        return NaN
+    end
+end
+
+peakpos = _peakfinder(peak_min, peak_max)
+if peakpos == NaN
+    @info "try larger peak window"
+    peakpos = _peakfinder(peak_min, 1.5*peak_max)  
+elseif length(peakpos) > length(gamma_lines) 
+    @info "too many peaks found - try smaller peak window"
+    for i in 0.1:0.1:0.9
+        peakpos = _peakfinder((1+i)*peak_min, (1-i)*peak_max)
+        if length(peakpos) == length(gamma_lines) 
+            break 
+        end 
+    end 
+elseif length(peakpos) < length(gamma_lines)
+  @info "too few peaks found - try larger peak window"
+    for i in 0.1:0.1:0.9
+        peakpos = _peakfinder((1-i)*peak_min, (1+i)*peak_max)
+        if length(peakpos) == length(gamma_lines) 
+            break 
+        end 
+    end 
+end 
+
+
 
 try
-    h_peaksearch = fit(Histogram, e_uncal, 0:bin_width:peak_max) # histogram for peak search
+    h_peaksearch = fit(Histogram, e_uncal, bin_min:bin_width:peak_max) # histogram for peak search
     _, peakpos[f] = RadiationSpectra.peakfinder(h_peaksearch, σ= ecal_config.peakfinder_σ, backgroundRemove=true, threshold = ecal_config.peakfinder_threshold)
 catch e 
     @warn "peakfinder failed for $filekey - use larger window. err $e"
-    h_peaksearch = fit(Histogram, e_uncal, 0:bin_width:(peak_max*1.5)) # histogram for peak search
+    h_peaksearch = fit(Histogram, e_uncal, bin_min:bin_width:(peak_max*1.5)) # histogram for peak search
     _, peakpos[f] = RadiationSpectra.peakfinder(h_peaksearch, σ= ecal_config.peakfinder_σ, backgroundRemove=true, threshold = ecal_config.peakfinder_threshold)
 end 
 if length(peakpos[f]) !== length(gamma_lines)

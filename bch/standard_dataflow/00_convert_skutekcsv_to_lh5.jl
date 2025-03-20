@@ -11,16 +11,17 @@ include("$(@__DIR__)/$relPath/utils/utils_IO.jl")
 
 # inputs
 asic = LegendData(:ppc01)
-period = DataPeriod(3)
-run = DataRun(51)
+period = DataPeriod(1)
+
+run = DataRun(1)
 channel = ChannelId(1)
-category = :cal 
+category = :bch
 
 # input for function: csv folder, heading 
 csv_folder = asic.tier[DataTier(:raw_csv), category , period, run]
 timestep = 0.01u"µs"
-
-skutek_csv_to_lh5(asic, period, run, category, channel, csv_folder; timestep = timestep)
+chmode = :pulser
+skutek_csv_to_lh5(asic, period, run, category, channel, csv_folder; timestep = timestep, chmode = chmode)
 
 # test resting this data 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])

@@ -18,14 +18,14 @@ using Measurements: value as mvalue
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
-include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
+# include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
 include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 
 # inputs
 reprocess = true 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(50)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_cusp]
@@ -36,8 +36,8 @@ ecal_config = dataprod_config(asic).energy(filekey).default
 
 # DEBUG START 
 data = asic
-source = :co60
-calib_type = :gamma
+source = :th228
+calib_type = :th228#:gamma
 gamma_lines =  ecal_config[Symbol("$(source)_lines")]
 left_window_sizes = ecal_config[Symbol("$(source)_left_window_sizes")]
 right_window_sizes = ecal_config[Symbol("$(source)_right_window_sizes")]
@@ -56,7 +56,7 @@ filekey = search_disk(FileKey, data.tier[DataTier(:raw), category , period, run]
 det = _channel2detector(data, channel)
 
 fs = 12
-e_type = :e_trap_ctc 
+e_type = :e_trap#_ctc 
  
 # load uncalibrated energies after qc and apply ctc if needed
 if endswith(string(e_type), "_ctc")
@@ -96,14 +96,14 @@ peakstats = report_simple.peakstats)
    
 plt_folder = LegendDataManagement.LDMUtils.get_pltfolder(data, filekey, :energy_calibration) * "/"
 det = _channel2detector(data, channel)
-p = LegendMakie.lplot(report_simple2, title = get_plottitle(filekey, det, "Simple Calibration"; additiional_type=string(e_type)), cal = true, juleana_logo = false)
-Makie.current_axis().titlesize = 16; p
+p = LegendMakie.lplot(report_simple2, titlesize = 16, title = get_plottitle(filekey, det, "Simple Calibration"; additiional_type=string(e_type)), cal = true, juleana_logo = false)
+p
 
 # # fit peaks
 @debug "Fit all peaks"
 result_fit, report_fit = fit_peaks(result_simple.peakhists, result_simple.peakstats, gamma_names; 
                             e_unit=result_simple.unit, calib_type=:th228, fit_func = fit_funcs, m_cal_simple=m_cal_simple)
-fig_fit = LegendMakie.lplot(report_fit, figsize = (600, 400*length(report_fit)), title = get_plottitle(filekey, det, "Peak Fits"; additiional_type=string(e_type)), juleana_logo = false)
+fig_fit = LegendMakie.lplot(report_fit, titlesize = 16, figsize = (600, 400*length(report_fit)), title = get_plottitle(filekey, det, "Peak Fits"; additiional_type=string(e_type)), juleana_logo = false)
 fig_fit
 pname = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("peak_fits_$(e_type)"))
 save(pname, fig_fit)
@@ -120,14 +120,7 @@ result_calib, report_calib = fit_calibration(ecal_config.cal_pol_order, μ_fit, 
 pp_notfit = [gamma_lines_dict[p] for p in gamma_names if !(p in gamma_names_cal_fit)]
 pname_calib = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("calibration_curve_$(e_type)"))
 # Plots_theme(; fs = fs, grid = :on)
-fig_calib = if isempty(μ_notfit)
-    # p = plot(report_calib, xerrscaling=100)
-    LegendMakie.lplot(report_calib, xerrscaling=100, title = get_plottitle(filekey, det, "Calibration Curve"; additiional_type=string(e_type)), juleana_logo = false)
-else
-    # p = plot(report_calib, xerrscaling=100, additional_pts=(μ = μ_notfit, peaks = pp_notfit))
-    LegendMakie.lplot(report_calib, xerrscaling=100, additional_pts=(μ = μ_notfit, peaks = pp_notfit), title = get_plottitle(filekey, det, "Calibration Curve"; additiional_type=string(e_type)), juleana_logo = false)
-end
-Makie.current_axis().titlesize = 17
+fig_calib =  LegendMakie.lplot(report_calib, xerrscaling=100, additional_pts=(μ = μ_notfit, peaks = pp_notfit), titlesize = 17, title = get_plottitle(filekey, det, "Calibration Curve"; additiional_type=string(e_type)), juleana_logo = false)
 # plot!(fig_calib, thickness_scaling = 1.5, legend = :topleft,  ylabel = "Energy (a.u.)")
 # plot!(plot_title=get_plottitle(filekey, _channel2detector(data, channel), " Calibration Curve"; additiional_type=string(e_type)), plot_titlelocation=(0.5,0.3), plot_titlefontsize=7)
 # savefig(fig_calib, pname_calib)
@@ -145,13 +138,14 @@ result_fwhm, report_fwhm = fit_fwhm(ecal_config.fwhm_pol_order, pp_fit, fwhm_fit
 fwhm_notfit =  f_cal_widths.([result_fit[p].fwhm for p in gamma_names if !(p in gamma_names_fwhm_fit)])
 pp_notfit = [gamma_lines_dict[p] for p in gamma_names if !(p in gamma_names_fwhm_fit)]
 pname_fwhm = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("fwhm_$(e_type)"))
-fig_fwhm = if isempty(fwhm_notfit)
-    # plot(report_fwhm)
-    LegendMakie.lplot(report_fwhm, title = get_plottitle(filekey, det, "FWHM"; additiional_type=string(e_type)), juleana_logo = false)
-else
-    # plot(report_fwhm, additional_pts=(peaks = pp_notfit, fwhm = fwhm_notfit))
-    LegendMakie.lplot(report_fwhm, additional_pts=(peaks = pp_notfit, fwhm = fwhm_notfit), title = get_plottitle(filekey, det, "FWHM"; additiional_type=string(e_type)), juleana_logo = false)
-end 
+fig_fwhm = LegendMakie.lplot(report_fwhm, additional_pts=(peaks = pp_notfit, fwhm = fwhm_notfit), titlesize = 17, title = get_plottitle(filekey, det, "FWHM"; additiional_type=string(e_type)), juleana_logo = false)
+# if isempty(fwhm_notfit)
+#     # plot(report_fwhm)
+#     LegendMakie.lplot(report_fwhm, title = get_plottitle(filekey, det, "FWHM"; additiional_type=string(e_type)), juleana_logo = false)
+# else
+#     # plot(report_fwhm, additional_pts=(peaks = pp_notfit, fwhm = fwhm_notfit))
+#     LegendMakie.lplot(report_fwhm, additional_pts=(peaks = pp_notfit, fwhm = fwhm_notfit), title = get_plottitle(filekey, det, "FWHM"; additiional_type=string(e_type)), juleana_logo = false)
+# end 
 # plot!(fig_fwhm, thickness_scaling = 1.5, xticks = 0:500:3000, legend = :bottomright, xlabel = "Energy (keV)", right_margin = 3mm)
 # plot!(plot_title=get_plottitle(filekey, _channel2detector(data, channel), "FWHM"; additiional_type=string(e_type)), plot_titlelocation=(0.5,0.3), plot_titlefontsize=8)
 # savefig(fig_fwhm, pname_fwhm)
