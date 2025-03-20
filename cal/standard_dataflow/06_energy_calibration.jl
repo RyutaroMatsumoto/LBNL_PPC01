@@ -33,7 +33,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 reprocess = true 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(39)
+run = DataRun(50)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_trap_ctc]#, :e_cusp]
@@ -46,7 +46,7 @@ ecal_config = dataprod_config(asic).energy(filekey).default
 process_energy_calibration(asic, period, run, category, channel, ecal_config; reprocess = reprocess, e_types = e_types)
 
 # read calibration parameters
-asic.par.rpars.ecal[period, run, channel].e_trap
+# asic.par.rpars.ecal[period, run, channel].e_trap
 
 for k in Symbol.(keys(asic.par.rpars.ecal[period, run, channel].e_trap.fit))
     @info "$k -> fwhm =  $(asic.par.rpars.ecal[period, run, channel].e_trap.fit[k].fwhm)"

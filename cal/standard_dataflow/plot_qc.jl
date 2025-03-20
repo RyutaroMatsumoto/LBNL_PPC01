@@ -17,7 +17,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(45)
+run = DataRun(50)
 channel = ChannelId(1)
 category = :cal 
 det = _channel2detector(asic, channel)

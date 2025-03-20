@@ -15,7 +15,7 @@ using TypedTables
 using Makie, LegendMakie, CairoMakie
 using Measures
 using Optim
-using BSplineKit
+using BSplineKit, Interpolations
 using Printf
 
 # include relevant functions 
@@ -27,11 +27,13 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_filteropt.jl")
 
 # inputs 
 asic = LegendData(:ppc01)
-period = DataPeriod(3)
-run = DataRun(52)
+period = DataPeriod(1)
+run = DataRun(1)
+for r in 13:22
+    run = DataRun(r)
 channel = ChannelId(1)
-category = DataCategory(:cal)
-filter_types = [:trap]#, :cusp]
+category = DataCategory(:bch)
+filter_types = [:trap]
 
 # load configs and modify if needed 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
@@ -39,9 +41,10 @@ dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 peak =  Symbol(pz_config.peak)
 τ_pz = mvalue(get_values(asic.par.rpars.pz[period, run, channel]).τ)
-
 # do optimization 
-process_filteropt(asic, period, run, category, channel, dsp_config, τ_pz, peak; reprocess = true, rt_opt_mode = :bl_noise, filter_types = filter_types)
 
+process_filteropt(asic, period, run, category, channel, dsp_config, τ_pz, peak; 
+                reprocess = true, rt_opt_mode = :bl_noise, filter_types = filter_types)
 # read filter optimization pars
 fltopt_pars = asic.par.rpars.fltopt[period,run,channel]
+end 

@@ -15,7 +15,6 @@ using Measurements: value as mvalue
 
 # load functions from hpge-ana
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__)
-# include("$relPath/hpge-ana/utils/utils_plot.jl")
 
 # inputs and setup 
 period = DataPeriod(3)

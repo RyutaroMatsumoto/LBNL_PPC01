@@ -27,10 +27,10 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_filteropt.jl")
 
 # inputs 
 asic = LegendData(:ppc01)
-period = DataPeriod(3)
-run = DataRun(49)
+period = DataPeriod(1)
+run = DataRun(1)
 channel = ChannelId(1)
-category = DataCategory(:cal)
+category = DataCategory(:bch)
 filter_types = [:trap]#, :cusp]
 
 # load configs and modify if needed 
@@ -43,7 +43,8 @@ peak =  Symbol(pz_config.peak)
 # START DEBUG
 data = asic 
 fwhm_rel_cut_fit = 0.1
-
+ft_qmin = 0.02
+ft_qmax = 0.98
 det = _channel2detector(data, channel)
 @info "Optimize filter for period $period, run $run, channel $channel /det $det - $filter_types"
 
@@ -95,7 +96,7 @@ filekey = search_disk(FileKey, data.tier[DataTier(:raw), category , period, run]
  # 2. flat top time optimixation 
  e_grid_ft   = getproperty(dsp_config, Symbol("e_grid_ft_$(filter_type)"))
  e_grid = getfield(Main, Symbol("dsp_$(filter_type)_ft_optimization"))(wvfs, dsp_config, τ_pz, mvalue(result_rt.rt))
- e_min, e_max = _quantile_truncfit(e_grid; qmin = 0.02, qmax = 0.98)
+ e_min, e_max = _quantile_truncfit(e_grid; qmin = ft_qmin, qmax = ft_qmax)
  result_ft, report_ft = fit_fwhm_ft(e_grid, e_grid_ft, result_rt.rt,  e_min, e_max, fwhm_rel_cut_fit; peak = data_peak.gamma_line[1])
  @info "Found optimal flattop-time: $(result_ft.ft) with FWHM $(round(u"keV", result_ft.min_fwhm, digits=2))"
  p = LegendMakie.lplot(report_ft, title = get_plottitle(filekey, det, "$peak FT Scan"; additiional_type=string(filter_type)), juleana_logo = false)

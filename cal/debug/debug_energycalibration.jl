@@ -25,7 +25,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 reprocess = true 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(2)
+run = DataRun(50)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_cusp]
@@ -36,8 +36,8 @@ ecal_config = dataprod_config(asic).energy(filekey).default
 
 # DEBUG START 
 data = asic
-source = :co60
-calib_type = :gamma
+source = :th228
+calib_type = :th228#:gamma
 gamma_lines =  ecal_config[Symbol("$(source)_lines")]
 left_window_sizes = ecal_config[Symbol("$(source)_left_window_sizes")]
 right_window_sizes = ecal_config[Symbol("$(source)_right_window_sizes")]

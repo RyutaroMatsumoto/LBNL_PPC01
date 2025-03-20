@@ -28,9 +28,10 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(39)
+run = DataRun(50)
 channel = ChannelId(1)
 category = DataCategory(:cal)
+det_ged = _channel2detector(asic, channel)
 
 # load config: 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
@@ -50,4 +51,15 @@ wvfs = data_peak.waveform
 decay_times = dsp_decay_times(wvfs, bl_window, tail_window)
 cuts_τ = cut_single_peak(decay_times, min_τ, max_τ,; n_bins=nbins, relative_cut=rel_cut_fit)
 result, report = fit_single_trunc_gauss(decay_times, cuts_τ)
-lplot(report)
+# plot 
+filekey = search_disk(FileKey, data.tier[DataTier(:raw), category , period, run])[1]
+fig = Figure()
+LegendMakie.lplot!(report, figsize = (600, 430), titlesize = 17, title = get_plottitle(filekey, det_ged, "Decay Time Distribution"), juleana_logo = false, xlabel = "Decay time ($(unit(decay_times[1])))")
+
+
+if maximum(abs.(extrema(report.gof.residuals_norm))) > 5.0
+    ylim = ceil(Int, maximum(abs.(extrema(report.gof.residuals_norm))))
+    ax2 = [ax for ax in fig.content if typeof(ax) <: Makie.Axis][2]
+    Makie.ylims!(ax2, -ylim, ylim)
+    fig
+end
