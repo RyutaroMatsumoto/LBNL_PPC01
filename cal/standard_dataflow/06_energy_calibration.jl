@@ -33,7 +33,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_energy_calibration.jl")
 reprocess = true 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(50)
+run = DataRun(52)
 channel = ChannelId(1)
 category = :cal 
 e_types = [:e_trap]#, :e_trap_ctc]#, :e_cusp]

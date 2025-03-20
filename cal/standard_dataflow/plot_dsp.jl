@@ -21,6 +21,10 @@ channel = ChannelId(1)
 run = DataRun(31) 
 apply_qc = true 
 
+for r in 50:52
+    run = DataRun(r)
+   
+
 # load dsp pars 
 dsp_pars = Table(read_ldata(asic, :jldsp, category, period, run, channel))
 filekey = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])[1]
@@ -40,8 +44,8 @@ function plot_dsppar(X::Vector{<:Real}; x_lbl::String = "", qmin = 0.0, qmax = 1
     fig = Figure()
     ax = Axis(fig[1, 1], xlabel = x_lbl, ylabel = "Counts",  limits = ((nothing, nothing), (0, nothing)),
          title = "$(_channel2detector(asic, channel))-$period-$run", titlesize = 16)
-    stephist!(ax, X, bins = 75, color = color, label = "median = $(round(median(X), digits = 1))")
-    hist!(ax, X, bins = 75, color = (color, 0.3), label = "median = $(round(median(X), digits = 1))") 
+    Makie.stephist!(ax, X, bins = 75, color = color, label = "median = $(round(median(X), digits = 1))")
+    Makie.hist!(ax, X, bins = 75, color = (color, 0.3), label = "median = $(round(median(X), digits = 1))") 
     axislegend(ax, merge = true)
     fig 
 end
@@ -73,7 +77,7 @@ qdrift = dsp_pars.qdrift
 fig_qdrift = plot_dsppar(ustrip.(qdrift)[qc_flag];  qmin = 0.0,  qmax = 0.999, color = colors[1], x_lbl = "qdrift (a.u.)")
 save(plt_folder * "qdrift_qc$(apply_qc)_all.png", fig_qdrift)
 
-
+end
 
 
 
