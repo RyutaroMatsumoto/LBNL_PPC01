@@ -10,7 +10,7 @@ using LegendHDF5IO
 using LegendSpecFits
 using RadiationSpectra
 using RadiationDetectorDSP
-using Measurements: value as mvalue
+using Measurements: value as mvalue, uncertainty as muncert
 using PropDicts
 using StatsBase, IntervalSets
 using Unitful
@@ -20,6 +20,7 @@ using Plots
 using Measures
 using LinearAlgebra
 
+
 # include relevant functions 
 relPath = relpath(split(@__DIR__, "hpge-ana")[1], @__DIR__) * "/hpge-ana/"
 include("$(@__DIR__)/$relPath/processing_funcs/process_decaytime.jl")
@@ -28,7 +29,7 @@ include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
-run = DataRun(13)
+run = DataRun(1)
 channel = ChannelId(1)
 category = DataCategory(:bch)
 
@@ -45,9 +46,7 @@ tail_window = dsp_config.tail_window
 
 # run processor
 plt = process_decaytime(asic, period, run, category, channel, min_τ, max_τ, nbins, rel_cut_fit, peak, bl_window, tail_window; reprocess = true)
-
 display(plt)
 
 # sanity check: read decay time pars
-pars_pz = asic.par.rpars.pz[period, run, channel]
-
+pars_pz = asic.par[category].rpars.pz[period, run, channel]

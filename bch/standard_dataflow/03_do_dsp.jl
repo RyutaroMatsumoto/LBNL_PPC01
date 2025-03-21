@@ -20,7 +20,7 @@ for r in 13:22
 # load configs 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
-τ_pz = mvalue(get_values(asic.par.rpars.pz[period, run, channel]).τ)
+τ_pz = mvalue(get_values(asic.par[category].rpars.pz[period, run, channel]).τ)
 pars_filter = asic.par.rpars.fltopt[period,run,channel]
 # pars_filter = PropDict() # if empty, use default filter parameters 
 # do dsp

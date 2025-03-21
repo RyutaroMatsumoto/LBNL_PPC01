@@ -12,8 +12,7 @@ include("$(@__DIR__)/$relPath/utils/utils_IO.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
-
-run = DataRun(1)
+run = DataRun(23)
 channel = ChannelId(1)
 category = :bch
 

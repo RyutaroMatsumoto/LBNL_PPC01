@@ -32,7 +32,7 @@ plt_folder = LegendDataManagement.LDMUtils.get_pltfolder(asic, filekey, :dsp) * 
 
 # load quality cuts: 
 if apply_qc == true
-    qc_flag = asic.par.rpars.qc[period][run, channel].wvf_keep.all
+    qc_flag = asic.par[category].rpars.qc[period][run, channel].wvf_keep.all
 else
     qc_flag = fill(true, length(dsp_pars))
 end

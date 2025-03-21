@@ -65,7 +65,7 @@ end
 # # result_pulser = (µ = result_pulser.μ, fit = result)
 
 # result_ecal = (µ = result.μ, µ_pulser = result_pulser.μ, fit = result, fit_pulser = result_pulser)
-# writelprops(data.par.rpars.ecal[period], run, PropDict("$channel" => result_ecal))
+# writelprops(data.par[category].rpars.ecal[period], run, PropDict("$channel" => result_ecal))
 # @info "Saved pars to disk"
 
 

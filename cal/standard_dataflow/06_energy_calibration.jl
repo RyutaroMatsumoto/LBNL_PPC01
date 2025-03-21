@@ -46,9 +46,9 @@ ecal_config = dataprod_config(asic).energy(filekey).default
 process_energy_calibration(asic, period, run, category, channel, ecal_config; reprocess = reprocess, e_types = e_types)
 
 # read calibration parameters
-# asic.par.rpars.ecal[period, run, channel].e_trap
+# asic.par[category].rpars.ecal[period, run, channel].e_trap
 
-for k in Symbol.(keys(asic.par.rpars.ecal[period, run, channel].e_trap.fit))
-    @info "$k -> fwhm =  $(asic.par.rpars.ecal[period, run, channel].e_trap.fit[k].fwhm)"
+for k in Symbol.(keys(asic.par[category].rpars.ecal[period, run, channel].e_trap.fit))
+    @info "$k -> fwhm =  $(asic.par[category].rpars.ecal[period, run, channel].e_trap.fit[k].fwhm)"
 end
 

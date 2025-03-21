@@ -26,8 +26,8 @@ det = _channel2detector(asic, channel)
 runs = vcat(15:22)
 
 # load peakfit results 
-µ_fit = [asic.par.rpars.ecal[period, DataRun(run), channel].µ for run in runs]
-pulser_fit = [asic.par.rpars.ecal[period, DataRun(run), channel].µ_pulser for run in runs]
+µ_fit = [asic.par[category].rpars.ecal[period, DataRun(run), channel].µ for run in runs]
+pulser_fit = [asic.par[category].rpars.ecal[period, DataRun(run), channel].µ_pulser for run in runs]
 
 # linear fit 
 result, report_lin  = fit_linearity(1, pulser_fit, µ_fit)
