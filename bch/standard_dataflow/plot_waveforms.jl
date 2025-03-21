@@ -77,7 +77,7 @@ a = 1
 # # 1. shift waveforms by baseline and do pole-zero correcition 
 # bl_stats = signalstats.(wvfs, leftendpoint(dsp_config.bl_window), rightendpoint(dsp_config.bl_window))
 # wvfs_shift = shift_waveform.(wvfs, -bl_stats.mean)
-# τ_pz = mvalue(asic.par.rpars.pz[period, run, channel].τ)
+# τ_pz = mvalue(asic.par[category].rpars.pz[period, run, channel].τ)
 # deconv_flt = InvCRFilter(τ_pz)
 # wvfs_pz = deconv_flt.(wvfs_shift)
 

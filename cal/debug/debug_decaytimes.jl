@@ -63,3 +63,7 @@ if maximum(abs.(extrema(report.gof.residuals_norm))) > 5.0
     Makie.ylims!(ax2, -ylim, ylim)
     fig
 end
+
+
+result_pz = (τ = result.μ, fit = result)
+writelprops(data.par[category].rpars.pz[period], run, PropDict("$channel" => result_pz))

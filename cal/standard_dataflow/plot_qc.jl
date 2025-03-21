@@ -36,7 +36,7 @@ end
 dsp_par = Table(read_ldata(asic, :jldsp, category, period, run, channel))
 
 # load quality cuts 
-qc_cuts = asic.par.rpars.qc[period][run][channel]
+qc_cuts = asic.par[category].rpars.qc[period][run][channel]
 qc_pars = filter!(x -> (x != :all) && (x != :finite), Symbol.(keys(qc_cuts.qc_surv)))
 
 # plot histograms of dsp parameters with and without qc cuts
@@ -137,7 +137,7 @@ nplts = 25
 waveforms_keep = read_ldata(asic, DataTier(:raw), category, period, run, channel).waveform[findall(qc_cuts.wvf_keep.all)][1:nplts*10]
 bl_stats = signalstats.(waveforms_keep, leftendpoint(dsp_config.bl_window), rightendpoint(dsp_config.bl_window))
 waveforms_keep = shift_waveform.(waveforms_keep, -bl_stats.mean)
-deconv_flt = InvCRFilter(mvalue(asic.par.rpars.pz[period, run, channel].τ))
+deconv_flt = InvCRFilter(mvalue(asic.par[category].rpars.pz[period, run, channel].τ))
 waveforms_keep_pz = deconv_flt.(waveforms_keep)
 figs = _plot_qc_waveform_grid(waveforms_keep, waveforms_keep_pz; ncol = 2, nwaveforms = 10, nplots = 10, save_plot = true, mode = :pass)
 figs[10]
@@ -146,7 +146,7 @@ figs[10]
 waveforms_cut = waveforms_keep = read_ldata(asic, DataTier(:raw), category, period, run, channel).waveform[findall(.!qc_cuts.wvf_keep.all)][1:nplts*10]
 bl_stats = signalstats.(waveforms_cut, leftendpoint(dsp_config.bl_window), rightendpoint(dsp_config.bl_window))
 waveforms_cut = shift_waveform.(waveforms_cut, -bl_stats.mean)
-deconv_flt = InvCRFilter(mvalue(asic.par.rpars.pz[period, run, channel].τ))
+deconv_flt = InvCRFilter(mvalue(asic.par[category].rpars.pz[period, run, channel].τ))
 waveforms_cut_pz = deconv_flt.(waveforms_cut)
 figs_cut = _plot_qc_waveform_grid(waveforms_cut, waveforms_cut_pz; ncol = 2, nwaveforms = 10, nplots = 10, save_plot = true, mode = :cut)
 figs_cut[1]
