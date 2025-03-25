@@ -24,7 +24,7 @@ include("$(@__DIR__)/$relPath/src/enc_noisesweep.jl")
 include("$(@__DIR__)/$relPath/utils/utils_plot.jl")
 include("$(@__DIR__)/$relPath/utils/utils_aux.jl")
 include("$(@__DIR__)/$relPath/processing_funcs/process_noisesweep.jl")
-
+include("$(@__DIR__)/$relPath/utils/utils_physics.jl")
 # inputs 
 asic = LegendData(:ppc01)
 period = DataPeriod(1)
@@ -34,7 +34,7 @@ category = DataCategory(:bch)
 filter_types = [:trap]
 
 # load configs and modify if needed 
-filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
+filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])[1:4]
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
 #pz_config = dataprod_config(asic).dsp(filekeys[1]).pz.default
 peak =  :all
