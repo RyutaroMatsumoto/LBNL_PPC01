@@ -18,7 +18,7 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_qualitycuts.jl")
 # inputs
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(39)
+run = DataRun(50)
 channel = ChannelId(1)
 category = :cal 
 
@@ -28,7 +28,7 @@ qc_config = dataprod_config(asic).qc(filekeys[1]).default
 process_qualitycuts(asic, period, run, category, channel; reprocess = true, qc_config = qc_config);
 
 # read quality cuts from pars 
-qc = asic.par.rpars.qc[period][run][channel]
+qc = asic.par[category].rpars.qc[period][run][channel]
 qc.wvf_keep.all
 sum(qc.wvf_keep.all)
 qc.qc_surv.all

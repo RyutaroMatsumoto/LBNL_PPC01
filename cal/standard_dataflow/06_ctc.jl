@@ -27,5 +27,5 @@ ctc_config = dataprod_config(asic).energy(filekey).ctc.default
 result = process_ctc(data, period, run, category, channel, ecal_config, ctc_config; reprocess=reprocess, juleana_logo=false)
 
 # check if result has been properly saved
-asic.par.rpars.ctc[period, run, channel].e_trap
+asic.par[category].rpars.ctc[period, run, channel].e_trap
 

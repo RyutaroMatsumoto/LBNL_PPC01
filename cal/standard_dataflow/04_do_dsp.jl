@@ -11,16 +11,16 @@ include("$(@__DIR__)/$relPath/processing_funcs/process_dsp.jl")
 # inputs 
 asic = LegendData(:ppc01)
 period = DataPeriod(3)
-run = DataRun(51)
+run = DataRun(50)
 channel = ChannelId(1)
 category = DataCategory(:cal)
 
 # load configs 
 filekeys = search_disk(FileKey, asic.tier[DataTier(:raw), category , period, run])
 dsp_config = DSPConfig(dataprod_config(asic).dsp(filekeys[1]).default)
-τ_pz = mvalue(get_values(asic.par.rpars.pz[period, run, channel]).τ)
-# pars_filter = asic.par.rpars.fltopt[period,run,channel]
-pars_filter = PropDict() # if empty, use default filter parameters 
+τ_pz = mvalue(get_values(asic.par[category].rpars.pz[period, run, channel]).τ)
+pars_filter = asic.par[category].rpars.fltopt[period,run,channel]
+# pars_filter = PropDict() # if empty, use default filter parameters 
 # do dsp
 process_dsp(asic, period, run, category, channel, dsp_config, τ_pz, pars_filter; reprocess = true)
 

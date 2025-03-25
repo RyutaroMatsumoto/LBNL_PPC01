@@ -48,5 +48,5 @@ plt = process_decaytime(asic, period, run, category, channel, min_τ, max_τ, nb
 display(plt)
 
 # sanity check: read decay time pars
-pars_pz = asic.par.rpars.pz[period, run, channel]
+pars_pz = asic.par[category].rpars.pz[period, run, channel]
 

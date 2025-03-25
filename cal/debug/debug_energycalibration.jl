@@ -82,7 +82,7 @@ fig = LegendMakie.lplot(report_simple, juleana_logo = false)
 [delete!(leg) for leg in fig.content if leg isa Legend]
 vl = vlines!([report_simple.peak_guess * ustrip(report_simple.c)], color = :red2, label = "Peak Guess", alpha = 0.5, linewidth = 3)
 axislegend(Makie.current_axis(), [vl], ["Peak Guess"], position = :lt)
-Makie.xlims!(Makie.current_axis(), 300, 2000)
+Makie.xlims!(Makie.current_axis(), 300, ustrip(maximum(gamma_lines)) + 100)
 fig
 m_cal_simple = result_simple.c
 filekey = search_disk(FileKey, data.tier[DataTier(:raw), category , period, run])[1]
@@ -110,7 +110,7 @@ save(pname, fig_fit)
 @info "Save peak fits plot to $(pname)"
 
 # # calibration curve 
-gamma_names_cal_fit = [p for p in gamma_names if !(p in Symbol.(ecal_config.cal_fit_excluded_peaks))]
+gamma_names_cal_fit = [p for p in gamma_names if !(p in ecal_config.cal_fit_excluded_peaks)]
 μ_fit =  [result_fit[p].centroid for p in gamma_names_cal_fit]
 pp_fit = [gamma_lines_dict[p] for p in gamma_names_cal_fit]
 result_calib, report_calib = fit_calibration(ecal_config.cal_pol_order, μ_fit, pp_fit; e_expression=e_uncal_func)
@@ -118,13 +118,52 @@ result_calib, report_calib = fit_calibration(ecal_config.cal_pol_order, μ_fit, 
 # plot calibration curve 
 μ_notfit =  [result_fit[p].centroid for p in gamma_names if !(p in gamma_names_cal_fit)]
 pp_notfit = [gamma_lines_dict[p] for p in gamma_names if !(p in gamma_names_cal_fit)]
-pname_calib = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("calibration_curve_$(e_type)"))
-# Plots_theme(; fs = fs, grid = :on)
-fig_calib =  LegendMakie.lplot(report_calib, xerrscaling=100, additional_pts=(μ = μ_notfit, peaks = pp_notfit), titlesize = 17, title = get_plottitle(filekey, det, "Calibration Curve"; additiional_type=string(e_type)), juleana_logo = false)
-# plot!(fig_calib, thickness_scaling = 1.5, legend = :topleft,  ylabel = "Energy (a.u.)")
-# plot!(plot_title=get_plottitle(filekey, _channel2detector(data, channel), " Calibration Curve"; additiional_type=string(e_type)), plot_titlelocation=(0.5,0.3), plot_titlefontsize=7)
-# savefig(fig_calib, pname_calib)
-save(pname_calib, fig_calib)
+# pname_calib = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("calibration_curve_$(e_type)"))
+fig_calib = Figure()
+# g = Makie.GridLayout(fig_calib[2,1])
+LegendMakie.lplot!(report_calib, xerrscaling=100, additional_pts=(μ = μ_notfit, peaks = pp_notfit), titlesize = 17, title = get_plottitle(filekey, det, "Calibration Curve"; additiional_type=string(e_type)), juleana_logo = false)
+replace_resplot(fig_calib, report_calib)
+# if res_max > 5.0
+#     Makie.ylims!(axs[2], -res_max*1.2, res_max*1.2 )
+# end 
+
+function replace_resplot(fig, report)
+    # replace residual plot with percent plot . 
+    # legs = fig.content[findall(map(x -> x isa Legend, fig.content))]
+    axs =  fig.content[findall(map(x -> x isa Axis, fig.content))]
+    res_max = maximum(abs.(report.gof.residuals_norm))
+    xvalues = mvalue.(report.x)
+    yvalues = mvalue.(report.y)
+    yfit_values = mvalue.(report.f_fit(xvalues))
+    residuals = 100 * (yvalues .- yfit_values) ./ yfit_values
+    res_max =  maximum(abs.(residuals))
+    x_nofit = mvalue.(μ_notfit)
+    y_nofit = mvalue.(ustrip.(pp_notfit))
+    residuals_nofit = 100 * (y_nofit .- mvalue.(report.f_fit(x_nofit))) ./ mvalue.(report.f_fit(x_nofit))
+    xlabel = axs[2].xlabel.val
+    delete!(axs[2])
+    g = fig.layout
+    ax2 = Makie.Axis(g[2,1], ;xlabel = xlabel, ylabel = "Residuals (%)", 
+                yticks = -0.1:0.1:0.1,
+                limits = ((nothing, nothing),( -1.2 * res_max, 1.2 * res_max) ))
+
+    Makie.hspan!(ax2, [-0.1], [0.1], color = :silver, alpha = 0.7)
+    Makie.hlines!(ax2, [0], [1], color = :silver, linestyle = :solid, linewidth = 2)
+    Makie.scatter!(ax2, x_nofit, residuals_nofit, color = :silver, strokecolor = :black, strokewidth = 1)
+    Makie.scatter!(ax2, xvalues, residuals, color = :black)#, markersize = markersize)
+    fig
+    Makie.linkxaxes!(axs[1], ax2)
+    Makie.rowgap!(g, -100); fig
+    Makie.rowsize!(g, 1, Makie.Auto(4)); fig
+    # align y labels 
+    yspace = maximum(Makie.tight_yticklabel_spacing!, (axs[1], ax2))
+    axs[1].yticklabelspace = yspace
+    ax2.yticklabelspace = yspace
+    fig 
+end 
+
+
+# save(pname_calib, fig_calib)
 @info "Save calibration curve plot to $(pname_calib)"
 
 # # resolution curve 
@@ -137,7 +176,7 @@ result_fwhm, report_fwhm = fit_fwhm(ecal_config.fwhm_pol_order, pp_fit, fwhm_fit
 # plot resolution curve
 fwhm_notfit =  f_cal_widths.([result_fit[p].fwhm for p in gamma_names if !(p in gamma_names_fwhm_fit)])
 pp_notfit = [gamma_lines_dict[p] for p in gamma_names if !(p in gamma_names_fwhm_fit)]
-pname_fwhm = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("fwhm_$(e_type)"))
+# pname_fwhm = plt_folder * _get_pltfilename(data, filekey, channel, Symbol("fwhm_$(e_type)"))
 fig_fwhm = LegendMakie.lplot(report_fwhm, additional_pts=(peaks = pp_notfit, fwhm = fwhm_notfit), titlesize = 17, title = get_plottitle(filekey, det, "FWHM"; additiional_type=string(e_type)), juleana_logo = false)
 # if isempty(fwhm_notfit)
 #     # plot(report_fwhm)
